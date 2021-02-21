@@ -1,0 +1,55 @@
+﻿@using MyTwitter.SessionModel
+@using MyTwitter.Models
+@{Layout = null;}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/ChatHub.css" rel="stylesheet" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-3.3.1.min.js"></script>
+    <script src="~/Scripts/jquery.signalR-2.3.0.min.js"></script>
+    <script src="~/SignalR/Hubs"></script>
+
+    <script>
+
+        $(function () {
+            var chat = $.connection.chatHub;
+            var $username = $('#txtUsername');
+            var $message = $('#txtMessage');
+            var $messages = $('#messages');
+            $message.focus();
+            chat.client.sendMessage = function (name, message) {
+                $messages.append('<li><strong>' + name + '</strong>: ' + message + '</li>');
+            };
+            $.connection.hub.start().done(function () {
+                $('#btnSendMessage').click(function () {
+
+                    chat.server.send($username.val(), $message.val());
+
+                    $message.val('').focus();
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    @{ var data = SessionSet<User>.Get("login");}
+
+
+    <div class="row">
+        <label for="txtUserName" style="line-height:80px;color:black;font-weight:bold;">Username: </label>@Html.TextBox("txtUsername", data.UserName)
+        <br />
+        &nbsp;
+        <label for="txtMessage" style="color:black;font-weight:bold;">Message:  </label> @Html.TextBox("txtMessage")
+
+        <button id="btnSendMessage">Mesaj Yolla</button>
+
+    </div>
+    <div>
+        <br /><br /><br />
+    </div>
+    <div id="messages"> </div>
+
+</body>
+</html>

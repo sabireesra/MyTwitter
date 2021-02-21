@@ -1,0 +1,53 @@
+﻿
+@{
+    ViewBag.Title = "Updates";
+}
+
+<h2>Updates</h2>
+<div class="row">
+    <div class="col-md-12">
+        <div id="messagesTable"></div>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/Scripts/jquery.signalR-2.3.0.js"></script>
+    <script src="~/signalr/hubs"></script>
+
+    <script type="text/javascript">
+    $(function () {
+
+        var notifications = $.connection.messagesHub;
+
+        notifications.client.updateMessages = function () {
+            getAllMessages()
+
+        };
+        // Bağlantı başlangıç
+        $.connection.hub.start().done(function () {
+            alert("connection started");
+            getAllMessages();
+        }).fail(function (e) {
+            alert(e);
+        });
+    });
+
+
+    function getAllMessages()
+    {
+        var tbl = $('#messagesTable');
+        $.ajax({
+            url: '/Notification/GetMessages',
+            contentType: 'application/html ; charset:utf-8',
+            type: 'GET',
+            dataType: 'html'
+        }).success(function (result) {
+            tbl.empty().append(result);
+        }).error(function () {
+
+        });
+    }
+    </script>
+
+}
+
